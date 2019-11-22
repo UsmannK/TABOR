@@ -7,7 +7,7 @@ import glob
 import random
 import pandas as pd
 import numpy as np
-import PIL
+from tqdm import trange
 from PIL import Image
 
 class GTSRBDataset:
@@ -76,27 +76,28 @@ class GTSRBDataset:
         """
         Load image data itself into numpy arrays
         """
-        train_images = np.empty((self.num_train, 32, 32, 3), dtype=np.uint8)
-        test_images = np.empty((self.num_test, 32, 32, 3), dtype=np.uint8)
-        train_labels = np.array(self.train_labels, dtype=np.uint8)
-        test_labels = np.array(self.test_labels, dtype=np.uint8)
+        self.train_images = np.empty((self.num_train, 32, 32, 3), dtype=np.uint8)
+        self.test_images = np.empty((self.num_test, 32, 32, 3), dtype=np.uint8)
+        self.train_labels = np.array(self.train_labels, dtype=np.uint8)
+        self.test_labels = np.array(self.test_labels, dtype=np.uint8)
 
         image_base_path = '{}/Final_Training/Images/'.format(self.data_dir)
 
-        for idx in range(self.num_train):
+        for idx in trange(self.num_train, desc='Load train images', ncols=80):
             cls_id = train_labels[idx]
             fname = self.train_img_fnames[idx]
             img_path = os.path.join(image_base_path, '{:05d}'.format(cls_id), fname)
-            img = np.array(PIL.Image.open(img_path).resize((32, 32)))
-            train_images[idx] = img
+            img = np.array(Image.open(img_path).resize((32, 32)))
+            self.train_images[idx] = img
 
-        for idx in range(self.num_test):
+        for idx in trange(self.num_test, desc='Load test images', ncols=80):
             cls_id = test_labels[idx]
             fname = self.test_img_fnames[idx]
             img_path = os.path.join(image_base_path, '{:05d}'.format(cls_id), fname)
-            img = np.array(PIL.Image.open(img_path).resize((32, 32)))
-            test_images[idx] = img
+            img = np.array(Image.open(img_path).resize((32, 32)))
+            self.test_images[idx] = img
 
 if __name__ == '__main__':
     # for profiling time to load
+    # currently ~3.5s on my laptop
     _ = GTSRBDataset()
