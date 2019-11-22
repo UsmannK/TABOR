@@ -84,14 +84,14 @@ class GTSRBDataset:
         image_base_path = '{}/Final_Training/Images/'.format(self.data_dir)
 
         for idx in trange(self.num_train, desc='Load train images', ncols=80):
-            cls_id = train_labels[idx]
+            cls_id = self.train_labels[idx]
             fname = self.train_img_fnames[idx]
             img_path = os.path.join(image_base_path, '{:05d}'.format(cls_id), fname)
             img = np.array(Image.open(img_path).resize((32, 32)))
             self.train_images[idx] = img
 
         for idx in trange(self.num_test, desc='Load test images', ncols=80):
-            cls_id = test_labels[idx]
+            cls_id = self.test_labels[idx]
             fname = self.test_img_fnames[idx]
             img_path = os.path.join(image_base_path, '{:05d}'.format(cls_id), fname)
             img = np.array(Image.open(img_path).resize((32, 32)))
