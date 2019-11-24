@@ -8,7 +8,7 @@ import argparse
 from tensorflow.keras import datasets, layers, models
 from tensorflow.keras.callbacks import ModelCheckpoint
 import matplotlib.pyplot as plt
-from eval_badnet import evaluate, test_poison
+from eval_badnet import evaluate_model, test_poison
 from gtsrb_dataset import GTSRBDataset
 
 def build_model(num_classes=43):
@@ -76,7 +76,7 @@ def train(epochs=None, poison_type=None, poison_size=None, poison_loc=None,
     test_loss, test_acc = conv_model.evaluate(dataset.test_images,
                                               dataset.test_labels, verbose=2)
     print("Test Loss: {}\nTest Acc: {}".format(test_loss, test_acc))
-    evaluate(conv_model=conv_model)
+    evaluate_model(conv_model=conv_model)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -87,6 +87,7 @@ if __name__ == '__main__':
     parser.add_argument('--poison-size', type=int)
     parser.add_argument('--train', action='store_true')
     parser.add_argument('--eval', action='store_true')
+    parser.add_argument('--test-poison', action='store_true')
     parser.add_argument('--display', action='store_true')
     args = parser.parse_args()
 
@@ -95,4 +96,9 @@ if __name__ == '__main__':
               poison_loc=args.poison_loc, poison_size=args.poison_size,
               display=args.display)
     if args.eval:
-        evaluate(checkpoint=args.checkpoint, display=args.display)
+        evaluate_model(checkpoint=args.checkpoint, display=args.display,
+                       conv_model=build_model())
+    if args.test_poison:
+        test_poison(checkpoint=args.checkpoint, conv_model=build_model(),
+                    poison_type=args.poison_type, poison_size=args.poison_size,
+                    poison_loc=args.poison_loc)
