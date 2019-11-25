@@ -3,3 +3,5 @@ TABOR_workspace
 .vscode
 __pycache__
 *hdf5
+output/events*
+*npy
