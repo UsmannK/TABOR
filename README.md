@@ -27,7 +27,9 @@ This codebase is written in tensorflow and tf.keras and has been tested on tenso
     Currently supported options:
     
     poison type: `FF` (firefox logo) and `whitesquare`
+
     poison location: `TL` and `BR`: Top Left and Bottom Right
+    
     poison size: integers
 
     To train without any poison, exclude the `poison-*` options
