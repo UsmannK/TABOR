@@ -1,4 +1,4 @@
-#TABOR: A Highly Accurate Approach to Inspecting and Restoring Trojan Backdoors in AI Systems 
+# TABOR: A Highly Accurate Approach to Inspecting and Restoring Trojan Backdoors in AI Systems 
 
 ## About
 This repository contains partial code implementation of the paper (https://arxiv.org/pdf/1908.01763.pdf). Currently this repo has been written to work on the GTSRB dataset with the 6 Conv + 2 MaxPooling CNN from the original paper.
