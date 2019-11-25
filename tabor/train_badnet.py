@@ -8,8 +8,8 @@ import argparse
 from tensorflow.keras import datasets, layers, models
 from tensorflow.keras.callbacks import ModelCheckpoint
 import matplotlib.pyplot as plt
-from eval_badnet import evaluate_model, test_poison
-from gtsrb_dataset import GTSRBDataset
+import eval_badnet
+import gtsrb_dataset
 
 def build_model(num_classes=43):
     """
@@ -45,8 +45,8 @@ def train(epochs=None, poison_type=None, poison_size=None, poison_loc=None,
     Train a model on the GTSRB dataset
     """
 
-    dataset = GTSRBDataset(poison_type=poison_type, poison_size=poison_size,
-                           poison_loc=poison_loc)
+    dataset = gtsrb_dataset.GTSRBDataset(poison_type=poison_type, poison_size=poison_size,
+                                         poison_loc=poison_loc)
     conv_model = build_model()
     conv_model.compile(optimizer='adam',
                        loss='sparse_categorical_crossentropy',
@@ -76,7 +76,7 @@ def train(epochs=None, poison_type=None, poison_size=None, poison_loc=None,
     test_loss, test_acc = conv_model.evaluate(dataset.test_images,
                                               dataset.test_labels, verbose=2)
     print("Test Loss: {}\nTest Acc: {}".format(test_loss, test_acc))
-    evaluate_model(conv_model=conv_model)
+    eval_badnet.evaluate_model(conv_model=conv_model)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -96,9 +96,9 @@ if __name__ == '__main__':
               poison_loc=args.poison_loc, poison_size=args.poison_size,
               display=args.display)
     if args.eval:
-        evaluate_model(checkpoint=args.checkpoint, display=args.display,
-                       conv_model=build_model())
+        eval_badnet.evaluate_model(checkpoint=args.checkpoint, display=args.display,
+                                   conv_model=build_model())
     if args.test_poison:
-        test_poison(checkpoint=args.checkpoint, conv_model=build_model(),
-                    poison_type=args.poison_type, poison_size=args.poison_size,
-                    poison_loc=args.poison_loc)
+        eval_badnet.test_poison(checkpoint=args.checkpoint, conv_model=build_model(),
+                                poison_type=args.poison_type, poison_size=args.poison_size,
+                                poison_loc=args.poison_loc)

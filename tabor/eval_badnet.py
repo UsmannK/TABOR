@@ -5,7 +5,7 @@ import numpy as np
 from tqdm import tqdm
 from sklearn.metrics import classification_report
 import matplotlib.pyplot as plt
-from gtsrb_dataset import GTSRBDataset, apply_poison, gen_poison, gtsrb_signname
+import gtsrb_dataset # import GTSRBDataset, apply_poison, gen_poison, gtsrb_signname
 
 def test_poison(checkpoint=None, conv_model=None, poison_type=None,
                 poison_size=None, poison_loc=None):
@@ -13,12 +13,12 @@ def test_poison(checkpoint=None, conv_model=None, poison_type=None,
     Randomly poison some images to spotcheck the badnet results
     """
 
-    dataset = GTSRBDataset()
+    dataset = gtsrb_dataset.GTSRBDataset()
     conv_model.load_weights(checkpoint)
 
     test_idxs = np.random.choice(range(len(dataset.test_images)),
                                  size=8, replace=False)
-    poison_mask = gen_poison(poison_type, poison_size)
+    poison_mask = gtsrb_dataset.gen_poison(poison_type, poison_size)
 
     predictions = []
     probabilities = []
@@ -32,7 +32,7 @@ def test_poison(checkpoint=None, conv_model=None, poison_type=None,
         probabilities.append(pred[predictions[-1]])
         gt_labels.append(dataset.test_labels[idx])
 
-        poisoned_img = apply_poison(np.squeeze(np.copy(img)), poison_mask, poison_loc)
+        poisoned_img = gtsrb_dataset.apply_poison(np.squeeze(np.copy(img)), poison_mask, poison_loc)
         images.append(poisoned_img)
         img = np.expand_dims(poisoned_img, axis=0)
         pred = conv_model.predict(img)[0]
@@ -51,8 +51,8 @@ def test_poison(checkpoint=None, conv_model=None, poison_type=None,
             pred = predictions[data_idx]
             cell.imshow(images[data_idx])
             cell.set_xlabel('gt: {} {}\npred: {} {}'.format(
-                gtsrb_signname(gt_label), gt_label,
-                gtsrb_signname(pred), pred))
+                gtsrb_dataset.gtsrb_signname(gt_label), gt_label,
+                gtsrb_dataset.gtsrb_signname(pred), pred))
             data_idx += 1
             print(data_idx)
     fig.subplots_adjust(hspace=.5)
@@ -64,7 +64,7 @@ def evaluate_model(checkpoint=None, display=None, conv_model=None):
     Evaluate a trained model.
     This is fairly unoptimized and runs a number of evaluations.
     """
-    dataset = GTSRBDataset()
+    dataset = gtsrb_dataset.GTSRBDataset()
     if checkpoint:
         conv_model.load_weights(checkpoint)
     conv_model.compile(optimizer='adam',
@@ -107,8 +107,8 @@ def evaluate_model(checkpoint=None, display=None, conv_model=None):
                 gt_label = gt_labels[data_idx]
                 pred = predictions[data_idx]
                 cell.imshow(images[data_idx])
-                cell.set_xlabel('gt: {}\npred: {}'.format(gtsrb_signname(gt_label),
-                                                          gtsrb_signname(pred)))
+                cell.set_xlabel('gt: {}\npred: {}'.format(gtsrb_dataset.gtsrb_signname(gt_label),
+                                                          gtsrb_dataset.gtsrb_signname(pred)))
                 data_idx += 1
                 print(data_idx)
         fig.subplots_adjust(hspace=.5)
