@@ -177,6 +177,7 @@ class Snooper:
         mask_best = None
         mask_upsample_best = None
         pattern_best = None
+        Y_target = None
         loss_best = float('inf')
 
         # logs and counters for adjusting balance cost
